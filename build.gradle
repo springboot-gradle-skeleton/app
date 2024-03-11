@@ -1,0 +1,155 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
+plugins {
+    id 'org.springframework.boot' apply false
+    id 'application'
+}
+
+
+allprojects {
+    apply plugin: 'jacoco'
+
+    group = 'com.skeleton'
+    version = '1.0.0-SNAPSHOT'
+
+
+
+    repositories {
+        // 私有maven仓库
+//        maven {
+//            allowInsecureProtocol = true
+//            url "http://xxx"
+//        }
+        maven {url 'https://maven.aliyun.com/repository/gradle-plugin'}
+        maven {url 'https://maven.aliyun.com/repository/google'}
+        maven {url 'https://maven.aliyun.com/repository/public'}
+        maven {url 'https://maven.aliyun.com/repository/jcenter'}
+        mavenLocal()
+        mavenCentral()
+    }
+
+    configurations.all {
+        // exclude moudle
+//        exclude moudle: 'spring-boot-starter-logging'
+//        exclude group: "io.springfox"
+    }
+
+    sourceCompatibility = "11"
+    [compileJava, compileTestJava, javadoc]*.options*.encoding = "UTF-8"
+
+}
+
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'java-library'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'maven-publish'
+
+    apply from: "${rootDir}/gradle/checkstyle/checkstyle.gradle"
+
+    dependencyManagement {
+        imports {
+            mavenBom SpringBootPlugin.BOM_COORDINATES
+        }
+        dependencies {
+            dependency "io.swagger.core.v3:swagger-annotations:2.1.11"
+            dependency "jakarta.validation:jakarta.validation-api:2.0.2"
+        }
+    }
+
+    dependencies {
+        annotationProcessor 'org.projectlombok:lombok'
+
+        implementation "com.skeleton.framework:framework:1.0.0-SNAPSHOT"
+
+        compileOnly "org.projectlombok:lombok:${lombok_version}"
+
+        testImplementation platform('org.junit:junit-bom:5.9.1')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testImplementation 'org.assertj:assertj-core'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    tasks.register('sourcesJar', Jar) {
+        dependsOn classes
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    tasks.register('javadocJar', Jar) {
+        dependsOn javadoc
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    javadoc {
+        options {
+            encoding 'UTF-8'
+            charSet 'UTF-8'
+            author true
+            version true
+            title "基础库"
+        }
+
+        if (JavaVersion.current().isJava9Compatible()) {
+            options.addBooleanOption("html5", true)
+        }
+
+        if (JavaVersion.current().isJava8Compatible()) {
+            options.addStringOption("Xdoclint:none", "-quiet")
+        }
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId project.group
+                artifactId project.name
+                version project.version
+
+                from components.java
+
+                artifact javadocJar
+                artifact sourcesJar
+            }
+        }
+
+        repositories {
+            mavenLocal()
+            maven {
+                def releaseRepoUrl = ""
+                def snapshotRepoUrl = ""
+
+                url = version.endsWith("SNAPSHOT") ? snapshotRepoUrl : releaseRepoUrl
+
+                credentials {
+                    username = getRepositoryUsername()
+                    password = getRepositoryPassword()
+                }
+            }
+        }
+    }
+
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+apply from: "${rootDir}/gradle/checkstyle/checkstyle.gradle"
+apply from: "${rootDir}/gradle/jacoco/jacoco.gradle"
+apply from: "${rootDir}/gradle/git-hooks/git-hooks.gradle"
+
+def getRepositoryUsername() {
+    return hasProperty("NEXUS_USERNAME") ? NEXUS_USERNAME : ''
+}
+
+def getRepositoryPassword() {
+    return hasProperty("NEXUS_PASSWORD") ? NEXUS_PASSWORD : ''
+}

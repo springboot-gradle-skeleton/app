@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(':application')
+    implementation project(':domain')
+    implementation project(':application-api')
+    implementation project(':domain-shared')
+}
