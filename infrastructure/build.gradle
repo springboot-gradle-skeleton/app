@@ -1,6 +1,35 @@
+plugins {
+    id "org.flywaydb.flyway"
+}
+
 dependencies {
+
+    // JDBC
+    implementation('org.springframework.boot:spring-boot-starter-data-jdbc')
+    // MyBatis
+    implementation('com.baomidou:mybatis-plus-boot-starter')
+    implementation('org.mybatis.spring.boot:mybatis-spring-boot')
+    // 分页
+    implementation('com.github.pagehelper:pagehelper-spring-boot-starter') {
+        // 避免循环引用
+        exclude group:'org.mybatis'
+    }
+    implementation('org.mapstruct:mapstruct')
+
+    implementation('mysql:mysql-connector-java')
+
+    // Flyway
+    implementation('org.flywaydb:flyway-core')
+
     implementation project(':application')
     implementation project(':domain')
     implementation project(':application-api')
     implementation project(':domain-shared')
+
+    // JDBC
+    testImplementation('com.baomidou:mybatis-plus-boot-starter-test')
+
+    // mariaDB
+    testImplementation('ch.vorburger.mariaDB4j:mariaDB4j-springboot')
+    testImplementation('org.mariadb.jdbc:mariadb-java-client')
 }

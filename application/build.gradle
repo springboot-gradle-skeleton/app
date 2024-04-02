@@ -2,8 +2,16 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springframework.boot:spring-boot-starter-aop"
+    implementation 'org.mapstruct:mapstruct'
+
+    implementation "org.springframework.boot:spring-boot-actuator-autoconfigure"
+
+    implementation "org.springdoc:springdoc-openapi-ui"
 
     implementation project(':domain')
     implementation project(':application-api')
     implementation project(':domain-shared')
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
 }

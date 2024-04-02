@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: app
+
+  flyway:
+    locations: classpath:/db/migration
+  datasource:
+    url: jdbc:mysql://localhost:3306/skeleton?useUnicode=true&characterEncoding=utf-8&autoReconnect=true
+    password: root
+    username: root
+#    schema-username: root
+#    data-username: root
+
+
+springdoc:
+  api-docs:
+    enabled: false
+mybatis-plus:
+  mapper-locations: classpath*:mappers/*.xml
+  configuration:
+    map-underscore-to-camel-case: true

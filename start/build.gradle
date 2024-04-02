@@ -4,11 +4,16 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-starter-web"
 
+
     implementation project(':application')
     implementation project(':infrastructure')
     implementation project(':domain')
     implementation project(':application-api')
     implementation project(':domain-shared')
+
+    testImplementation('ch.vorburger.mariaDB4j:mariaDB4j-springboot')
+//    testImplementation('org.mariadb.jdbc:mariadb-java-client')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
 }
 
 springBoot {

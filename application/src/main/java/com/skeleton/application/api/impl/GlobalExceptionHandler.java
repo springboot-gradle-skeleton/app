@@ -12,6 +12,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Objects;
@@ -21,7 +22,8 @@ import java.util.Objects;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ExceptionResponse> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exception) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ExceptionResponseExtend<ValidationResult>> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exception) {
 
         ValidationResult validationResult = new ValidationResult();
 
@@ -34,7 +36,7 @@ public class GlobalExceptionHandler {
             }
         }
 
-        ExceptionResponse exceptionResponse = new ExceptionResponseExtend<ValidationResult>(
+        ExceptionResponseExtend<ValidationResult> exceptionResponse = new ExceptionResponseExtend<>(
                 "method_argument_not_valid", HttpStatus.BAD_REQUEST.value(), null, null, validationResult);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
